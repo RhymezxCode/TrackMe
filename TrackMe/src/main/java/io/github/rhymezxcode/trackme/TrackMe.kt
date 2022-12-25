@@ -9,10 +9,12 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
+import android.os.Bundle
 import android.os.IBinder
 import android.provider.Settings
 import android.util.Log
 import androidx.core.app.ActivityCompat
+
 
 class TrackMe(
     context: Context?,
@@ -116,7 +118,8 @@ class TrackMe(
                         Log.d("Network", "Network")
                         if (locationManager != null) {
                             location =
-                                locationManager?.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+                                locationManager?.getLastKnownLocation(LocationManager
+                                    .NETWORK_PROVIDER)
                             if (location != null) {
                                 checkLocationStatus = true
                                 latitude = location!!.latitude
@@ -137,7 +140,8 @@ class TrackMe(
                             Log.d("GPS Enabled", "GPS Enabled")
                             if (locationManager != null) {
                                 location =
-                                    locationManager?.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+                                    locationManager?.getLastKnownLocation(LocationManager
+                                        .GPS_PROVIDER)
                                 if (location != null) {
                                     checkLocationStatus = true
                                     latitude = location!!.latitude
@@ -261,14 +265,11 @@ class TrackMe(
             updatedLocation = location
         }
 
-        override fun onProviderDisabled(provider: String) {
-            // TODO Auto-generated method stub
-        }
+        override fun onProviderEnabled(provider: String) {}
 
-        override fun onProviderEnabled(provider: String) {
-            // TODO Auto-generated method stub
-        }
+        override fun onProviderDisabled(provider: String) {}
 
+        override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
         override fun onBind(intent: Intent): IBinder? {
             // TODO Auto-generated method stub
             return null

@@ -3,29 +3,29 @@
 package io.github.rhymezxcode.trackme
 
 import android.Manifest
-import android.R
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.pm.PackageManager
 import android.location.Address
 import android.location.Geocoder
-import android.location.Location
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.coroutineScope
 import androidx.lifecycle.lifecycleScope
-import com.google.android.gms.common.ConnectionResult
-import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
+import com.karumi.dexter.Dexter
+import com.karumi.dexter.MultiplePermissionsReport
+import com.karumi.dexter.PermissionToken
+import com.karumi.dexter.listener.PermissionRequest
+import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import io.github.rhymezxcode.networkstateobserver.network.NetworkStateObserver
 import io.github.rhymezxcode.networkstateobserver.network.Reachability
 import io.github.rhymezxcode.trackme.databinding.ActivityMainBinding
@@ -45,12 +45,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var map: GoogleMap
     private lateinit var mapFragment: SupportMapFragment
-    private var fromLatitude = 0.0
-    private var fromLongitude = 0.0
-    private var fromCurrentAddress: String? = null
-    private var toLatitude = 0.0
-    private var toLongitude = 0.0
-    private var toCurrentAddress: String? = null
+    private var currentLatitude = 0.0
+    private var currentLongitude = 0.0
+    private var currentAddress: String? = null
 
     private val uiDispatcher: CoroutineDispatcher = Dispatchers.Main
     private val dataProvider = DataProvider()
@@ -71,7 +68,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                             this@MainActivity
                         ) ->
                             lifecycleScope.launchWhenStarted {
-                                loadGPS()
+                                permissionCheck()
                             }
 
                         else -> lifecycleScope.launchWhenStarted {
@@ -112,12 +109,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
         mapFragment = (supportFragmentManager.findFragmentById(binding?.map?.id!!)
                 as SupportMapFragment?)!!
-
         with(mapFragment) {
-            onCreate(savedInstanceState)
             getMapAsync {
+                onCreate(savedInstanceState)
                 map = it
-                loadGPS()
                 loadMap(it)
             }
         }
@@ -140,25 +135,46 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     }
 
-    private fun getCurrentLocation() {
+    private suspend fun getCurrentLocation() {
         when (trackMe?.checkMyLocationStatus()) {
             true -> {
                 try {
-                    val addresses: List<Address>? = geoCoder.getFromLocation(
-                        trackMe?.getMyLatitude() ?: 0.0,
-                        trackMe?.getMyLongitude() ?: 0.0,
-                        1
-                    )
+                    val addresses: List<Address>? = withContext(Dispatchers.IO){
+                        geoCoder.getFromLocation(
+                            trackMe?.getMyLatitude() ?: 0.0,
+                            trackMe?.getMyLongitude() ?: 0.0,
+                            1
+                        )
+                    }
 
                     if (!addresses.isNullOrEmpty()) {
                         Log.e("Google places: ", "$addresses")
 
                         val address: String = addresses[0].getAddressLine(0)
 
-                        fromLatitude = trackMe?.getMyLatitude() ?: 0.0
-                        fromLongitude = trackMe?.getMyLongitude() ?: 0.0
-                        fromCurrentAddress = address
+                        currentLatitude = trackMe?.getMyLatitude() ?: 0.0
+                        currentLongitude = trackMe?.getMyLongitude() ?: 0.0
+                        currentAddress = address
 
+                        val currentLatLng = LatLng(
+                            currentLatitude,
+                            currentLongitude
+                        )
+
+                        val marker: MarkerOptions = MarkerOptions()
+                            .position(currentLatLng)
+                            .title(currentAddress)
+
+                        lifecycleScope.launchWhenStarted {
+                            map.addMarker(marker)
+
+                            map.animateCamera(
+                                CameraUpdateFactory.newLatLngZoom(
+                                    currentLatLng,
+                                    15f
+                                )
+                            )
+                        }
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -167,16 +183,44 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
             false -> {
                 lifecycleScope.launchWhenStarted {
-                    trackMe?.showSettingsDialog()
+                    val intent = intent
+                    finish()
+                    startActivity(intent)
+
+                    showToast(
+                        this@MainActivity,
+                        "Your location was not available yet!"
+                    )
                 }
 
             }
 
-            else -> {
-                trackMe?.showSettingsDialog()
-            }
+            else -> {}
         }
 
+    }
+
+    private fun permissionCheck() {
+        Dexter.withContext(this@MainActivity)
+            .withPermissions(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            )
+            .withListener(object : MultiplePermissionsListener {
+
+                override fun onPermissionsChecked(p0: MultiplePermissionsReport?) {
+                    if(p0?.areAllPermissionsGranted() == true){
+                        loadGPS()
+                    }
+                }
+
+                override fun onPermissionRationaleShouldBeShown(
+                    p0: MutableList<PermissionRequest>?,
+                    p1: PermissionToken?
+                ) {
+                    p1?.continuePermissionRequest()
+                }
+            }).check()
     }
 
     //TODO: Configure properly with markers
@@ -205,36 +249,12 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 isMyLocationEnabled = false
                 uiSettings.isMyLocationButtonEnabled = false
 
-                val fromLatLong = LatLng(
-                    fromLatitude,
-                    fromLongitude
-                )
-
-                val addresses: List<Address>? = withContext(Dispatchers.Default) {
-                    geoCoder.getFromLocation(
-                        fromLatitude,
-                        fromLongitude,
-                        1
-                    )
-                }
-                if (!addresses.isNullOrEmpty()) {
-                    val address: String = addresses[0].getAddressLine(0)
-                    fromCurrentAddress = address
-                }
-
                 initializeMapUiSettings()
                 initializeMapTraffic()
                 initializeMapType()
                 initializeMapViewSettings()
 
                 mapType = GoogleMap.MAP_TYPE_NORMAL
-
-                animateCamera(
-                    CameraUpdateFactory.newLatLngZoom(
-                        fromLatLong,
-                        15f
-                    )
-                )
 
             } catch (ex: java.lang.Exception) {
                 Log.e("Error", "" + ex.localizedMessage)
@@ -311,8 +331,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         dataProvider.loadGPS()
     }
 
-    private fun loadMap(map: GoogleMap) = lifecycle.coroutineScope.launch(uiDispatcher
-            + mapJob) {
+    private fun loadMap(map: GoogleMap) = lifecycle.coroutineScope.launch(
+        uiDispatcher
+                + mapJob
+    ) {
         dataProvider.loadMap(map)
     }
 

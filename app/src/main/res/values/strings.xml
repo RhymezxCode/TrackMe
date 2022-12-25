@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">TrackMe</string>
+    <string name="GOOGLE_MAP_API_KEY">YOUR API KEY</string>
 </resources>
