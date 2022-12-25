@@ -30,10 +30,10 @@
 
 ## TrackMe Android Library
 An android library used to track your current location, it provides the latitude, longitude and location objects for your personal use.
+<pre>
+<img src="/media/demo_track_me.gif" width="250" height="500"/>            <img src="/media/track_me_screenshot.png" width="300" height="600"/>
+</pre>
 
-Demo:
-
-![]([media/demo_track_me](https://raw.githubusercontent.com/RhymezxCode/TrackMe/main/media/demo_track_me.webm))
 
 ### 1. Adding TrackMe to your project
 
