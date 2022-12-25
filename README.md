@@ -180,6 +180,7 @@ dependencies {
       trackMe?.getMyLongitude()  //Double
       trackMe?.getMyLocation()   //Location
 ```
+Note: You can run the sample project in the repo, to see how it works!
 
 :pushpin: Please, feel free to give me a star :star2:, I also love sparkles :sparkles: :relaxed:
 <div align="center">
