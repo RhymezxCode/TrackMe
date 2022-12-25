@@ -33,7 +33,7 @@ An android library used to track your current location, it provides the latitude
 
 Demo:
 
-![](media/demo_track_me.webm)
+![]([media/demo_track_me](https://raw.githubusercontent.com/RhymezxCode/TrackMe/main/media/demo_track_me.webm))
 
 ### 1. Adding TrackMe to your project
 
@@ -126,9 +126,9 @@ dependencies {
 
                         val address: String = addresses[0].getAddressLine(0)
 
-                        currentLatitude = trackMe?.getMyLatitude() ?: 0.0
-                        currentLongitude = trackMe?.getMyLongitude() ?: 0.0
-                        currentAddress = address
+                        val currentLatitude = trackMe?.getMyLatitude() ?: 0.0
+                        val currentLongitude = trackMe?.getMyLongitude() ?: 0.0
+                        val currentAddress = address
 
                         val currentLatLng = LatLng(
                             currentLatitude,
@@ -146,7 +146,7 @@ dependencies {
                             map.animateCamera(
                                 CameraUpdateFactory.newLatLngZoom(
                                     currentLatLng,
-                                    15f
+                                    17f
                                 )
                             )
                         }
@@ -174,7 +174,8 @@ dependencies {
 ```
 * Available methods for your location:
 
-```kt                            //DataTypes
+```kt                            
+                                 //DataTypes
       trackMe?.getMyLatitude()   //Double
       trackMe?.getMyLongitude()  //Double
       trackMe?.getMyLocation()   //Location
