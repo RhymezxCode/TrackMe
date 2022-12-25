@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace 'io.github.rhymezxcode.trackme'
+    namespace 'io.github.rhymezxcode.TrackMeExample'
     compileSdk 33
 
     defaultConfig {
-        applicationId "io.github.rhymezxcode.trackme"
+        applicationId "io.github.rhymezxcode.TrackMeExample"
         minSdk 24
         targetSdk 33
         versionCode 1

@@ -1,4 +1,4 @@
-package io.github.rhymezxcode.trackme
+package io.github.rhymezxcode.TrackMeExample
 
 import android.Manifest
 import android.app.AlertDialog

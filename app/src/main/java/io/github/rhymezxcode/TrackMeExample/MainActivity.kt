@@ -1,6 +1,6 @@
 @file:Suppress("DEPRECATION")
 
-package io.github.rhymezxcode.trackme
+package io.github.rhymezxcode.TrackMeExample
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -28,7 +28,7 @@ import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import io.github.rhymezxcode.networkstateobserver.network.NetworkStateObserver
 import io.github.rhymezxcode.networkstateobserver.network.Reachability
-import io.github.rhymezxcode.trackme.databinding.ActivityMainBinding
+import io.github.rhymezxcode.TrackMeExample.databinding.ActivityMainBinding
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -189,7 +189,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
                     showToast(
                         this@MainActivity,
-                        "Your location was not available yet!"
+                        "Your location is not available yet!"
                     )
                 }
 
