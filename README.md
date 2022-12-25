@@ -29,7 +29,7 @@
 <br />
 
 ## TrackMe Android Library
-An android library used to track your current location, it provides the latitude, longitude and location objects for your personal use.
+An android library used to track your current location, it provides the latitude, longitude and location for your personal use.
 <pre>
 <img src="/media/demo_track_me.gif" width="250" height="500"/>            <img src="/media/track_me_screenshot.png" width="300" height="600"/>
 </pre>
