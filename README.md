@@ -22,9 +22,6 @@
 <a href="https://github.com/RhymezxCode/TrackMe/commits?author=RhymezxCode" target="blank">
     <img src="https://img.shields.io/github/last-commit/RhymezxCode/TrackMe" alt="TrackMe Android Library Issues"/>
 </a>
-<a href="https://bettercodehub.com/edge/badge/RhymezxCode/TrackMe?branch=main" target="blank">
-  <img src='https://bettercodehub.com/edge/badge/RhymezxCode/TrackMe?branch=main'>
-</a>
 </div>
 <br />
 
