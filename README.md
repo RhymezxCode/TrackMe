@@ -57,7 +57,7 @@ dependencyResolutionManagement {
 
 ```gradle
 dependencies {
-    implementation 'com.github.RhymezxCode:TrackMe:1.0.3'
+    implementation 'com.github.RhymezxCode:TrackMe:1.0.6'
 
     //Dexter for runtime permissions
     implementation 'com.karumi:dexter:6.2.3'
